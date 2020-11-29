@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace TokenSimulations
@@ -36,7 +35,7 @@ namespace TokenSimulations
 
             int index;
             ChaosToken token;
-            while(pullAgain)
+            while (pullAgain)
             {
                 index = this.random.Next(this.bag.Count);
 
@@ -106,7 +105,7 @@ namespace TokenSimulations
 
             foreach (var token in tokens)
             {
-                if(token.Type == TokenType.Bless || token.Type == TokenType.Curse)
+                if (token.Type == TokenType.Bless || token.Type == TokenType.Curse)
                 {
                     pulledTokens.AddRange(this.PullOneAndResolve());
                 }
@@ -151,12 +150,12 @@ namespace TokenSimulations
 
         public bool AddBless(int quant = 1)
         {
-            if(quant <= 0)
+            if (quant <= 0)
             {
                 return true;
             }
 
-            if(this.blessCount + quant > Constants.BlessLimit)
+            if (this.blessCount + quant > Constants.BlessLimit)
             {
                 return false;
             }
@@ -202,7 +201,7 @@ namespace TokenSimulations
         private static List<ChaosToken> GetNotzBag(Difficulty difficulty)
         {
             return new List<ChaosToken>
-            { 
+            {
                 new ChaosToken(TokenType.AutoFail),
                 new ChaosToken(TokenType.ElderSign),
                 new ChaosToken(TokenType.PlusOne),
@@ -219,6 +218,15 @@ namespace TokenSimulations
                 new ChaosToken(TokenType.Skull),
                 new ChaosToken(TokenType.Cultist),
                 new ChaosToken(TokenType.Tablet),
+            };
+        }
+
+        private static List<ChaosToken> GetBaseBag()
+        {
+            return new List<ChaosToken>
+            {
+                new ChaosToken(TokenType.AutoFail),
+                new ChaosToken(TokenType.ElderSign),
             };
         }
 

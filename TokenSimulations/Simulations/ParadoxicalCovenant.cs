@@ -7,10 +7,51 @@ namespace TokenSimulations.Simulations
 {
     public static class ParadoxicalCovenant
     {
-        public static void SimplePull(long iterations)
+        public static void PrintAll(long iterations = 100000)
         {
-            int bless = 10;
-            int curse = 10;
+            SimplePullPrint(iterations);
+
+            JackiePullPrint(iterations);
+
+            JackiePullAfterPrint(iterations);
+
+            OlivePullPrint(iterations);
+        }
+
+        static void OutputToCsv(int iterations = 100000)
+        {
+            var outputLines = new List<string>();
+
+            outputLines.Add("bless, curse, simpleChance, jackiepull, olivepull");
+
+            int bless = 1;
+            int curse = 1;
+            for (int i = 0; i < 10; i++)
+            {
+                var simplePull = SimplePull(iterations, bless, curse);
+                float simplePullChance = 100 * (float)simplePull / (float)iterations;
+
+                var jackiePull = JackiePull(iterations, bless, curse);
+                float jackiePullChance = 100 * (float)jackiePull / (float)iterations;
+
+                var olivePull = OlivePull(iterations, bless, curse);
+                float olivePullChance = 100 * (float)olivePull / (float)iterations;
+
+                outputLines.Add($"{bless}, {curse}, {simplePullChance:F2}, {jackiePullChance:F2}, {olivePullChance:F2}");
+
+                bless++;
+                curse++;
+            }
+
+            var outputPath = @"C:\ArkhamHorrorSimulations\ParadoxicalCovenant.csv";
+
+            System.Console.WriteLine($"Paradoxical Dovenant. Output: {outputPath}");
+
+            System.IO.File.WriteAllLines(outputPath, outputLines);
+        }
+
+        public static long SimplePull(long iterations, int bless = 10, int curse = 10)
+        {
             long activations = 0;
             var bag = SetupBag(bless, curse);
 
@@ -24,18 +65,25 @@ namespace TokenSimulations.Simulations
                 }
             }
 
+            return activations;
+        }
+
+        public static void SimplePullPrint(long iterations, int bless = 10, int curse = 10)
+        {
+            var activations = SimplePull(iterations, bless, curse);
+
             System.Console.WriteLine("Paradoxical Covenant simply pulling a token");
             System.Console.WriteLine($"Bless tokens: {bless}, Curse tokens: {curse}");
             PrintResults(iterations, activations);
         }
 
-        public static void JackiePull(long iterations)
+        public static long JackiePull(long iterations, int bless = 10, int curse = 10)
         {
             long activations = 0;
 
             for (int i = 0; i < iterations; i++)
             {
-                var bag = SetupBag(bless: 10, curse: 10);
+                var bag = SetupBag(bless, curse);
                 var tokenToResolve = ChooseJackieTokenToResolve(bag.Pull(3));
 
                 var finalTokens = bag.Resolve(tokenToResolve);
@@ -47,41 +95,60 @@ namespace TokenSimulations.Simulations
 
             }
 
+            return activations;
+        }
+
+        public static void JackiePullPrint(long iterations, int bless = 10, int curse = 10)
+        {
+            long activations = JackiePull(iterations, bless, curse);
+
             System.Console.WriteLine("Paradoxical Covenant using Jacqueline Fine's ability");
+            System.Console.WriteLine($"Bless tokens: {bless}, Curse tokens: {curse}");
             PrintResults(iterations, activations);
         }
 
-        public static void JackiePullAfter(long iterations)
+        public static long JackiePullAfter(long iterations, int bless = 10, int curse = 10)
         {
             long activations = 0;
 
             for (int i = 0; i < iterations; i++)
             {
-                var bag = SetupBag(bless: 9, curse: 10);
-                var tokenToResolve = ChooseJackieTokenToResolve(bag.Pull(3));
+                var bag = SetupBag(bless, curse);
 
-                var finalTokens = bag.Resolve(tokenToResolve);
+                var firstToken = bag.Pull().First();
 
-                if (finalTokens.Any(t => t.Type == TokenType.Curse))
+                if (firstToken.Type == TokenType.Bless || firstToken.Type == TokenType.Curse)
                 {
-                    activations++;
-                }
+                    var tokenToResolve = ChooseJackieTokenToResolve(bag.Pull(3), firstToken.Type);
 
+                    var finalTokens = bag.Resolve(tokenToResolve).Append(firstToken);
+
+                    if (finalTokens.Any(t => t.Type == TokenType.Bless) && finalTokens.Any(t => t.Type == TokenType.Curse))
+                    {
+                        activations++;
+                    }
+                }
             }
 
-            double multiplier = 20.0 / 36.0;
-
-            System.Console.WriteLine("Paradoxical Covenant using Jacqueline Fine's ability after drawing 1 bless/curse token");
-            PrintResults(iterations, activations, multiplier);
+            return activations;
         }
 
-        public static void OlivePull(long iterations)
+        public static void JackiePullAfterPrint(long iterations, int bless = 10, int curse = 10)
+        {
+            long activations = JackiePullAfter(iterations, bless, curse);
+
+            System.Console.WriteLine("Paradoxical Covenant using Jacqueline Fine's ability after drawing 1 bless/curse token");
+            System.Console.WriteLine($"Bless tokens: {bless}, Curse tokens: {curse}");
+            PrintResults(iterations, activations);
+        }
+
+        public static long OlivePull(long iterations, int bless = 10, int curse = 10)
         {
             long activations = 0;
 
             for (int i = 0; i < iterations; i++)
             {
-                var bag = SetupBag(bless: 5, curse: 5);
+                var bag = SetupBag(bless, curse);
                 var tokensToResolve = ChooseOliveTokensToResolve(bag.Pull(3));
 
                 var finalTokens = bag.Resolve(tokensToResolve);
@@ -92,7 +159,15 @@ namespace TokenSimulations.Simulations
                 }
             }
 
+            return activations;
+        }
+
+        public static void OlivePullPrint(long iterations, int bless = 10, int curse = 10)
+        {
+            long activations = OlivePull(iterations, bless, curse);
+
             System.Console.WriteLine("Paradoxical Covenant using Olive McBride's ability");
+            System.Console.WriteLine($"Bless tokens: {bless}, Curse tokens: {curse}");
             PrintResults(iterations, activations);
         }
 
@@ -106,14 +181,21 @@ namespace TokenSimulations.Simulations
             return bag;
         }
 
-        private static IEnumerable<ChaosToken> ChooseJackieTokenToResolve(IEnumerable<ChaosToken> chaosTokens)
+        private static IEnumerable<ChaosToken> ChooseJackieTokenToResolve(IEnumerable<ChaosToken> chaosTokens, TokenType otherToLookFor = TokenType.Bless)
         {
+            if (otherToLookFor != TokenType.Bless && otherToLookFor != TokenType.Curse)
+            {
+                throw new InvalidOperationException("Must be looking for bless or curse");
+            }
+
+            var tokenToLookFor = otherToLookFor == TokenType.Bless ? TokenType.Curse : TokenType.Bless;
+
             if(chaosTokens.Any(t => t.Type == TokenType.AutoFail))
             {
                 return chaosTokens.Where(t => t.Type != TokenType.AutoFail);
             }
 
-            var blessOrCurse = chaosTokens.FirstOrDefault(t => t.Type == TokenType.Curse);
+            var blessOrCurse = chaosTokens.FirstOrDefault(t => t.Type == tokenToLookFor);
 
             if(blessOrCurse != null)
             {
@@ -121,7 +203,7 @@ namespace TokenSimulations.Simulations
             }
             else
             {
-                blessOrCurse = chaosTokens.FirstOrDefault(t => t.Type == TokenType.Bless);
+                blessOrCurse = chaosTokens.FirstOrDefault(t => t.Type == otherToLookFor);
 
                 if (blessOrCurse != null)
                 {
