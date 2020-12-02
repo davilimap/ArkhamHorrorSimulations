@@ -8,7 +8,7 @@ namespace TokenSimulations
     {
         static void Main(string[] args)
         {
-            HenryWan.PrintMany();
+            HenryWanGraph();
 
             Console.ReadLine();
         }
@@ -26,7 +26,7 @@ namespace TokenSimulations
                 var simplePull = ParadoxicalCovenant.SimplePull(iterations, bless, curse);
                 float simplePullChance = 100 * (float) simplePull / (float) iterations;
 
-                var jackiePull = ParadoxicalCovenant.JackiePull(iterations, bless, curse);
+                var jackiePull = ParadoxicalCovenant.JackiePullAfter(iterations, bless, curse);
                 float jackiePullChance = 100 * (float)jackiePull / (float)iterations;
 
                 var olivePull = ParadoxicalCovenant.OlivePull(iterations, bless, curse);
@@ -40,7 +40,53 @@ namespace TokenSimulations
 
             var outputPath = @"C:\ArkhamHorrorSimulations\ParadoxicalCovenant.csv";
 
-            System.Console.WriteLine($"Paradoxical Dovenant. Output: {outputPath}");
+            System.Console.WriteLine($"Paradoxical Covenant. Output: {outputPath}");
+
+            System.IO.File.WriteAllLines(outputPath, outputLines);
+        }
+
+        static void HenryWanGraph(int iterations = 100000)
+        {
+            var outputLines = new List<string>();
+
+            outputLines.Add("bless/curse, 1pull, 2pull, 3pull, 4 pull, 5pull, ev");
+
+            int bless = 0;
+            int curse = 0;
+            for (int i = 0; i <= 20; i++)
+            {
+                var onePull = HenryWan.Simulate(pulls: 1, iterations, bless, curse);
+                float onePullChance = 100 * (float)onePull / (float)iterations;
+
+                var twoPull = HenryWan.Simulate(pulls: 2, iterations, bless, curse);
+                float twoPullChance = 100 * (float)twoPull / (float)iterations;
+
+                var threePull = HenryWan.Simulate(pulls: 3, iterations, bless, curse);
+                float threePullChance = 100 * (float)threePull / (float)iterations;
+
+                var fourPull = HenryWan.Simulate(pulls: 4, iterations, bless, curse);
+                float fourPullChance = 100 * (float)fourPull / (float)iterations;
+
+                var fivePull = HenryWan.Simulate(pulls: 5, iterations, bless, curse);
+                float fivePullChance = 100 * (float)fivePull / (float)iterations;
+
+                var ev = HenryWan.EvUntilBust(iterations, bless, curse);
+
+                outputLines.Add($"{i}, {onePullChance:F2}, {twoPullChance:F2}, {threePullChance:F2}, {fourPullChance:F2}, {fivePullChance:F2}, {ev:F2}");
+
+                if (i % 2 == 0)
+                {
+                    bless++;
+                }
+                else
+                {
+                    curse++;
+                }                
+            }
+
+            var outputPath = @"C:\ArkhamHorrorSimulations\HenryWan.csv";
+
+            System.Console.WriteLine($"Henry Wan. Output: {outputPath}");
 
             System.IO.File.WriteAllLines(outputPath, outputLines);
         }

@@ -5,6 +5,8 @@ namespace TokenSimulations.Simulations
 {
     public static class HenryWan
     {
+        private static int MAXPULLS = 100;
+
         public static void PrintMany(int stoppingPoint = 5, long iterations = 100000)
         {
             for (int i = 0; i < stoppingPoint; i++)
@@ -36,6 +38,17 @@ namespace TokenSimulations.Simulations
             return successes;
         }
 
+        public static double EvUntilBust(long iterations, int bless = 0, int curse = 0)
+        {
+            double totalValues = 0;
+            for (int i = 0; i < iterations; i++)
+            {
+                totalValues += PullUntilBust(bless, curse);
+            }
+
+            return totalValues / iterations;
+        }
+
         public static void SimulatePrint(int pulls, long iterations, int bless = 0, int curse = 0)
         {
             var activations = Simulate(pulls, iterations, bless, curse);
@@ -43,6 +56,24 @@ namespace TokenSimulations.Simulations
             System.Console.WriteLine($"Henry Wan trying for {pulls} pulls");
             System.Console.WriteLine($"Bless tokens: {bless}, Curse tokens: {curse}");
             PrintResults(iterations, activations);
+        }
+
+        private static int PullUntilBust(int bless = 0, int curse = 0)
+        {
+            var bag = SetupBag(bless, curse);
+            int i = 1;
+            while (i <= MAXPULLS)
+            {
+                var token = bag.Pull().First();
+                if(IsBust(token.Type))
+                {
+                    return i;
+                }
+
+                i++;
+            }
+
+            return i;
         }
 
         private static bool IsBust(TokenType type)
