@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace TokenSimulations.Simulations
 {
-    public static class ParadoxicalCovenant
+    public class ParadoxicalCovenant: SimulationBase
     {
-        public static void PrintAll(long iterations = 100000)
+        public static ParadoxicalCovenant Instance = new ParadoxicalCovenant("Paradoxical Covenant");
+
+        private ParadoxicalCovenant(string name) : base(name)
+        {
+        }
+
+        public void PrintAll(long iterations = 100000)
         {
             SimplePullPrint(iterations);
 
@@ -18,7 +23,7 @@ namespace TokenSimulations.Simulations
             OlivePullPrint(iterations);
         }
 
-        static void OutputToCsv(int iterations = 100000)
+        public void OutputAllToCsv(int iterations = 100000)
         {
             var outputLines = new List<string>();
 
@@ -50,7 +55,7 @@ namespace TokenSimulations.Simulations
             System.IO.File.WriteAllLines(outputPath, outputLines);
         }
 
-        public static long SimplePull(long iterations, int bless = 10, int curse = 10)
+        public override long SimplePull(long iterations, int bless = 10, int curse = 10)
         {
             long activations = 0;
             var bag = SetupBag(bless, curse);
@@ -68,16 +73,7 @@ namespace TokenSimulations.Simulations
             return activations;
         }
 
-        public static void SimplePullPrint(long iterations, int bless = 10, int curse = 10)
-        {
-            var activations = SimplePull(iterations, bless, curse);
-
-            System.Console.WriteLine("Paradoxical Covenant simply pulling a token");
-            System.Console.WriteLine($"Bless tokens: {bless}, Curse tokens: {curse}");
-            PrintResults(iterations, activations);
-        }
-
-        public static long JackiePull(long iterations, int bless = 10, int curse = 10)
+        public long JackiePull(long iterations, int bless = 10, int curse = 10)
         {
             long activations = 0;
 
@@ -98,7 +94,7 @@ namespace TokenSimulations.Simulations
             return activations;
         }
 
-        public static void JackiePullPrint(long iterations, int bless = 10, int curse = 10)
+        public void JackiePullPrint(long iterations, int bless = 10, int curse = 10)
         {
             long activations = JackiePull(iterations, bless, curse);
 
@@ -142,7 +138,7 @@ namespace TokenSimulations.Simulations
             PrintResults(iterations, activations);
         }
 
-        public static long OlivePull(long iterations, int bless = 10, int curse = 10)
+        public override long OlivePull(long iterations, int bless = 10, int curse = 10)
         {
             long activations = 0;
 
@@ -160,25 +156,6 @@ namespace TokenSimulations.Simulations
             }
 
             return activations;
-        }
-
-        public static void OlivePullPrint(long iterations, int bless = 10, int curse = 10)
-        {
-            long activations = OlivePull(iterations, bless, curse);
-
-            System.Console.WriteLine("Paradoxical Covenant using Olive McBride's ability");
-            System.Console.WriteLine($"Bless tokens: {bless}, Curse tokens: {curse}");
-            PrintResults(iterations, activations);
-        }
-
-        private static ChaosBag SetupBag(int bless, int curse)
-        {
-            var bag = new ChaosBag(Campaign.NightOfTheZealot, Difficulty.Standard);
-            if(!bag.AddBless(bless) || !bag.AddCurse(curse))
-            {
-                throw new InvalidOperationException("Added too many bless/curse tokens to the bag");
-            }
-            return bag;
         }
 
         private static IEnumerable<ChaosToken> ChooseJackieTokenToResolve(IEnumerable<ChaosToken> chaosTokens, TokenType otherToLookFor = TokenType.Bless)
@@ -233,15 +210,6 @@ namespace TokenSimulations.Simulations
             {
                 return chaosTokens.OrderBy(t => t.Type).Take(2);
             }
-        }
-
-        private static void PrintResults(long iterations, long activations, double multiplier = 1)
-        {
-            double chanceOfActivating = 100 * multiplier * (double)activations / ((double)iterations);
-
-            System.Console.WriteLine($"Iterations: {iterations}");
-            System.Console.WriteLine($"Chance of activating: {chanceOfActivating:F2}");
-            System.Console.WriteLine();
-        }
+        }        
     }
 }

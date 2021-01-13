@@ -5,7 +5,7 @@ namespace TokenSimulations.Simulations
 {
     public static class HenryWan
     {
-        private static int MAXPULLS = 100;
+        private const int MAXPULLS = 100;
 
         public static void PrintMany(int stoppingPoint = 5, long iterations = 100000)
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TokenSimulations
 {
-    class ChaosToken
+    public class ChaosToken
     {
         public ChaosToken(TokenType type)
         {

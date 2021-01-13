@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace TokenSimulations
 {
-    class ChaosBag
+    public class ChaosBag
     {
         private readonly List<ChaosToken> bag;
         private readonly List<ChaosToken> sealedTokens;

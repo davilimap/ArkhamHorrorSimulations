@@ -4,16 +4,20 @@ using TokenSimulations.Simulations;
 
 namespace TokenSimulations
 {
-    class Program
+    public class Program
     {
+        private const int DEFAULT_ITERATIONS = 100000;
+
         static void Main(string[] args)
         {
-            HenryWanGraph();
+            BlessingOfIsis.Instance.SimplePullPrint(DEFAULT_ITERATIONS);
+
+            BlessingOfIsis.Instance.OlivePullPrint(DEFAULT_ITERATIONS);
 
             Console.ReadLine();
         }
 
-        static void ParadoxicalCovenantGraph(int iterations = 100000)
+        private static void ParadoxicalCovenantGraph(int iterations = DEFAULT_ITERATIONS)
         {
             var outputLines = new List<string>();
 
@@ -45,7 +49,7 @@ namespace TokenSimulations
             System.IO.File.WriteAllLines(outputPath, outputLines);
         }
 
-        static void HenryWanGraph(int iterations = 100000)
+        private static void HenryWanGraph(int iterations = DEFAULT_ITERATIONS)
         {
             var outputLines = new List<string>();
 
